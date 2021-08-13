@@ -3,6 +3,7 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import '../controllers/hello_world_controller.dart';
 import '../controllers/login_controllers/login_controller.dart';
 import '../controllers/task_controllers/create_task_controller.dart';
+import '../controllers/task_controllers/edit_task_controller.dart';
 
 class Routes {
   static shelf_router.Router routes() {
@@ -18,6 +19,10 @@ class Routes {
       ..post(
         '/create-task',
         CreateTaskController.handle,
+      )
+      ..patch(
+        '/update-task',
+        EditTaskController.handle,
       );
     return _router;
   }

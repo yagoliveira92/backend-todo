@@ -14,10 +14,9 @@ class CreateTaskController {
     await db.open();
     final store = db.collection('tasks');
     final todo = TodoModel.fromMap(response);
-    final userToken = await JWTController.getUserJWT(
-        token: request.headers['authorization'] ?? '');
+    final userToken = await JWTController.getUserJWT(request: request);
     final todoTask = todo.toMap();
-    todoTask.addAll({'userId': userToken!.id!.$oid});
+    todoTask.addAll({'user-id': userToken!.id!.$oid});
     final result = await store.insert(todoTask);
     db.close();
     return Response.ok(

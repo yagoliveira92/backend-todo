@@ -1,5 +1,6 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:mongo_dart/mongo_dart.dart';
+import 'package:shelf/shelf.dart';
 
 import '../../config/env_config.dart';
 import '../model/user_model.dart';
@@ -27,8 +28,9 @@ abstract class JWTController {
     }
   }
 
-  static Future<UserModel?> getUserJWT({required String token}) async {
-    final jwtResult = verifyJwt(token: token);
+  static Future<UserModel?> getUserJWT({required Request request}) async {
+    final token = request.headers['authorization'];
+    final jwtResult = verifyJwt(token: token ?? '');
     if (jwtResult is JWT) {
       final db = await Db.create(Env.mongoUrl);
       await db.open();
