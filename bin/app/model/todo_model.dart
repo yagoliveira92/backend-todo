@@ -28,17 +28,17 @@ class TodoModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'taskName': taskName,
-      'dateToEnd': dateToEnd.millisecondsSinceEpoch,
+      'task-name': taskName,
+      'date-to-end': dateToEnd,
       'description': description,
-      'isDone': isDone,
+      'is-done': isDone,
     };
   }
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
       taskName: map['task-name'],
-      dateToEnd: DateTime.parse(map['date-end']),
+      dateToEnd: map['date-to-end'],
       description: map['description'],
       isDone: map['is-done'] == 'true',
     );
