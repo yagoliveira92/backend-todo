@@ -29,7 +29,9 @@ class EditTaskController {
       taskObject = TodoModel.fromMap(searchResultTask);
     }
     final taskUpdate = taskObject.copyWith(
-      dateToEnd: DateTime.parse(response['date-to-end'] ?? ''),
+      dateToEnd: response['date-to-end'] != null
+          ? DateTime.parse(response['date-to-end'] ?? '')
+          : null,
       description: response['description'],
       isDone:
           response['is-done'] != null ? response['is-done'] == 'true' : null,

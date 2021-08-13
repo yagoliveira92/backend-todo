@@ -38,7 +38,9 @@ class TodoModel {
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
       taskName: map['task-name'],
-      dateToEnd: map['date-to-end'],
+      dateToEnd: map['date-to-end'] is String
+          ? DateTime.parse(map['date-to-end'])
+          : map['date-to-end'],
       description: map['description'],
       isDone: map['is-done'] == 'true',
     );
