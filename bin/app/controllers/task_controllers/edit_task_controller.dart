@@ -27,9 +27,11 @@ class EditTaskController {
         ObjectId.fromHexString(queryString['task-id'] ?? ''),
       ),
     );
-    if (searchResultTask != null) {
-      taskObject = TodoModel.fromMap(searchResultTask);
+    if (searchResultTask == null) {
+      return Response.notFound(
+          JsonEncoder.withIndent(' ').convert({'error': 'Não encontrado'}));
     }
+    taskObject = TodoModel.fromMap(searchResultTask);
     final taskUpdate = taskObject.copyWith(
       dateToEnd: response['date-to-end'] != null
           ? DateTime.parse(response['date-to-end'] ?? '')
