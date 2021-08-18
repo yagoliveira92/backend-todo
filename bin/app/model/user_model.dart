@@ -30,7 +30,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': id!.$oid,
       'name': name,
       'email': email,
       'password': password,

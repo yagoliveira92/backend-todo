@@ -3,7 +3,9 @@ import 'package:shelf_router/shelf_router.dart' as shelf_router;
 import '../controllers/hello_world_controller.dart';
 import '../controllers/login_controllers/login_controller.dart';
 import '../controllers/task_controllers/create_task_controller.dart';
+import '../controllers/task_controllers/delete_task_controller.dart';
 import '../controllers/task_controllers/edit_task_controller.dart';
+import '../controllers/task_controllers/read_task_controller.dart';
 
 class Routes {
   static shelf_router.Router routes() {
@@ -23,6 +25,14 @@ class Routes {
       ..patch(
         '/update-task',
         EditTaskController.handle,
+      )
+      ..get(
+        '/get-task',
+        ReadTaskController.handle,
+      )
+      ..delete(
+        '/delete-task',
+        DeleteTaskController.handle,
       );
     return _router;
   }

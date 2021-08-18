@@ -9,8 +9,10 @@ import '../../model/todo_model.dart';
 
 class EditTaskController {
   static handle(Request request) async {
-    Map<String, String> response = request.url.queryParameters;
+    Map<String, dynamic> response = json.decode(await request.readAsString());
+    Map<String, String> queryString = request.url.queryParameters;
     TodoModel taskObject = TodoModel(
+      id: ObjectId(),
       dateToEnd: DateTime.now(),
       description: '',
       isDone: false,
@@ -22,7 +24,7 @@ class EditTaskController {
     final userToken = await JWTController.getUserJWT(request: request);
     final searchResultTask = await store.findOne(
       where.id(
-        ObjectId.fromHexString(response['task-id'] ?? ''),
+        ObjectId.fromHexString(queryString['task-id'] ?? ''),
       ),
     );
     if (searchResultTask != null) {
@@ -39,7 +41,7 @@ class EditTaskController {
     );
     final result = await store.updateOne(
       where
-          .eq('_id', ObjectId.fromHexString(response['task-id'] ?? ''))
+          .eq('_id', ObjectId.fromHexString(queryString['task-id']!))
           .eq('user-id', userToken!.id!.$oid),
       ModifierBuilder()
           .set('task-name', taskUpdate.taskName)

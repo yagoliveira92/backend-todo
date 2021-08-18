@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:mongo_dart/mongo_dart.dart';
+
 class TodoModel {
+  ObjectId? id;
   String taskName;
   DateTime dateToEnd;
   String description;
   bool isDone;
   TodoModel({
+    required this.id,
     required this.taskName,
     required this.dateToEnd,
     required this.description,
@@ -13,12 +17,14 @@ class TodoModel {
   });
 
   TodoModel copyWith({
+    ObjectId? id,
     String? taskName,
     DateTime? dateToEnd,
     String? description,
     bool? isDone,
   }) {
     return TodoModel(
+      id: id ?? this.id,
       taskName: taskName ?? this.taskName,
       dateToEnd: dateToEnd ?? this.dateToEnd,
       description: description ?? this.description,
@@ -28,8 +34,9 @@ class TodoModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id!.$oid,
       'task-name': taskName,
-      'date-to-end': dateToEnd,
+      'date-to-end': dateToEnd.toString(),
       'description': description,
       'is-done': isDone,
     };
@@ -37,6 +44,7 @@ class TodoModel {
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
     return TodoModel(
+      id: map['_id'],
       taskName: map['task-name'],
       dateToEnd: map['date-to-end'] is String
           ? DateTime.parse(map['date-to-end'])
@@ -61,6 +69,7 @@ class TodoModel {
     if (identical(this, other)) return true;
 
     return other is TodoModel &&
+        other.id == id &&
         other.taskName == taskName &&
         other.dateToEnd == dateToEnd &&
         other.description == description &&
@@ -69,7 +78,8 @@ class TodoModel {
 
   @override
   int get hashCode {
-    return taskName.hashCode ^
+    return id.hashCode ^
+        taskName.hashCode ^
         dateToEnd.hashCode ^
         description.hashCode ^
         isDone.hashCode;
