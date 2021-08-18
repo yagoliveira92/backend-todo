@@ -24,7 +24,8 @@ class ReadTaskController {
             .eq('user-id', userToken?.id!.$oid),
       );
       if (result == null) {
-        return Response.notFound({'error': 'Não encontrado'});
+        return Response.notFound(
+            JsonEncoder.withIndent(' ').convert({'error': 'Não encontrado'}));
       }
       searchResultTask.add(TodoModel.fromMap(result));
     } else {
