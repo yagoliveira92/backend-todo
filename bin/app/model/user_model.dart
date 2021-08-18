@@ -29,12 +29,17 @@ class UserModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id!.$oid,
+    Map<String, dynamic> userMap = {
       'name': name,
       'email': email,
       'password': password,
     };
+    if (id != null) {
+      userMap.addAll({
+        'id': id!.$oid,
+      });
+    }
+    return userMap;
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {

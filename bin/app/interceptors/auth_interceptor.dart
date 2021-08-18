@@ -7,7 +7,8 @@ class AuthMiddleware {
   static Middleware handle() {
     return createMiddleware(
       requestHandler: (request) {
-        if (request.requestedUri.path == '/login') return null;
+        if (request.requestedUri.path == '/login' ||
+            request.requestedUri.path == '/register') return null;
         final authHeader = request.headers['authorization'];
         if (authHeader != null && authHeader.startsWith('Bearer ')) {
           var resultVerify = JWTController.verifyJwt(token: authHeader);
