@@ -9,7 +9,7 @@ import '../../model/todo_model.dart';
 
 class CreateTaskController {
   static handle(Request request) async {
-    Map<String, String> response = request.url.queryParameters;
+    Map<String, dynamic> response = json.decode(await request.readAsString());
     final db = await Db.create(Env.mongoUrl);
     await db.open();
     final store = db.collection('tasks');

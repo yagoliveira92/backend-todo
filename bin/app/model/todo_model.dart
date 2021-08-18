@@ -9,7 +9,7 @@ class TodoModel {
   String description;
   bool isDone;
   TodoModel({
-    required this.id,
+    this.id,
     required this.taskName,
     required this.dateToEnd,
     required this.description,
@@ -33,13 +33,18 @@ class TodoModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id!.$oid,
+    Map<String, dynamic> modelMap = {
       'task-name': taskName,
       'date-to-end': dateToEnd.toString(),
       'description': description,
       'is-done': isDone,
     };
+    if (id != null) {
+      modelMap.addAll({
+        'id': id!.$oid,
+      });
+    }
+    return modelMap;
   }
 
   factory TodoModel.fromMap(Map<String, dynamic> map) {
