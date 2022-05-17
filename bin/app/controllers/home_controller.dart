@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/forecast/weather_forecast_calculeted_model.dart';
-import '../models/forecast/weather_forecast_data_model.dart';
 import '../models/forecast/weather_forecast_model.dart';
-import '../models/forecast/weather_forecast_week_calculated_model.dart';
+import '../models/sensors/sensors_entity.dart';
+import '../utils/forecast_calculus.dart';
+import '../utils/sensors_calculus.dart';
 
 class HomeController {
   static homeHandler(Request request) async {
@@ -25,110 +25,50 @@ class HomeController {
       'lenght': _allParams['lenght']
     });
 
-    try {
-      final resultHistoricals = await http
-          .get(_urlHistoricals, headers: {'authorization': _getToken});
-      final resultForecast =
-          await http.get(_urlForecast, headers: {'authorization': _getToken});
-      final resultSensors =
-          await http.get(_urlSensors, headers: {'authorization': _getToken});
+    final resultHistoricals =
+        await http.get(_urlHistoricals, headers: {'authorization': _getToken});
+    final resultForecast =
+        await http.get(_urlForecast, headers: {'authorization': _getToken});
+    final resultSensors =
+        await http.get(_urlSensors, headers: {'authorization': _getToken});
 
-      Map<String, dynamic> forecastMap = json.decode(resultForecast.body);
-      WeatherForecastModel forecast = WeatherForecastModel.fromMap(forecastMap);
+    Map<String, dynamic> forecastMap = json.decode(resultForecast.body);
+    WeatherForecastModel forecast = WeatherForecastModel.fromMap(forecastMap);
 
-      final Map<String, dynamic> mapResult = {
-        'forecast': forecast.forecastPoints[0].toMap(),
-        'historicals': json.decode(resultHistoricals.body),
-        // 'sensors': allSensors.getRange(0, 2),
-      };
-      print(mapResult);
-      return Response(
-        resultSensors.statusCode,
-        body: JsonEncoder.withIndent(' ').convert(mapResult),
-      );
-    } catch (e) {
-      return Response.badRequest(body: e);
-    }
-  }
+    forecast = forecast.copyWith(
+      forecastPoints: [
+        forecast.forecastPoints[0],
+      ],
+    );
 
-  void _weatherHelper({required WeatherForecastModel forecastModel}) {
-    // Loop de todos os pontos de previsão
-    forecastModel.forecastPoints.map(
-      (forecastPoint) {
-        WeatherForecastWeekCalculatedModel forecastWeek =
-            WeatherForecastWeekCalculatedModel();
+    final forecastResultProcessed =
+        ForecastCalculus.weatherHelper(forecastModel: forecast);
 
-        // Loop de todos os dias da semana do respectivo ponto de previsão
-        forecastPoint.data.map((forecastData) {
-          WeatherForecastCalculatedModel forecastCalculated =
-              WeatherForecastCalculatedModel();
+    final sensorsMap = json.decode(resultSensors.body);
 
-          // Compara o valor do dia anterior com o dia atual, o maior fica.
-          forecastWeek.greaterVolume = calcMaxVol(
-            forecastDataEntity: forecastData,
-            maxVolume: forecastWeek.greaterVolume,
-          );
+    List<SensorsEntity> listSensor = (sensorsMap as List)
+        .map((dynamic json) => SensorsEntity.fromMap(json))
+        .toList();
 
-          // Verifica se aquele dia haverá chuva e adiciona na semana.
-          if (forecastData.pop >= 5) {
-            forecastWeek.daysRain++;
-          }
+    final sensorsResultProcessed =
+        SensorsCalculus.sensorsCalculus(listSensor: listSensor);
 
-          // Calcula o total de expectativa de chuva na semana
-          forecastWeek = calcTotalExpectation(
-            forecastDataEntity: forecastData,
-            forecastWeekCalculated: forecastWeek,
-          );
+    final sensorsListMap = sensorsResultProcessed
+        .map((sensor) => sensor.toMap())
+        .toList()
+        .getRange(0, 3)
+        .toList();
 
-          // Calcula o máximo e o mínimo do dia
-          forecastCalculated.maxDayExpectationRain =
-              forecastData.pcpTot + forecastData.pcpTotStd;
-          if ((forecastData.pcpTot - forecastData.pcpTotStd) > 0) {
-            forecastCalculated.minDayExpectationRain =
-                forecastData.pcpTot - forecastData.pcpTotStd;
-          } else {
-            forecastCalculated.minDayExpectationRain = 0;
-          }
+    final fieldSetup = json.decode(resultHistoricals.body);
 
-          // Copia os valores do dia com os cálculados
-          return forecastData.copyWith(
-            weatherForecastCalculated: forecastCalculated,
-          );
-        }).toList();
-        return forecastPoint.copyWith(
-          weatherForecastWeekCalculated: forecastWeek,
-        );
-      },
-    ).toList();
-  }
-
-  int calcMaxVol({
-    required WeatherForecastDataModel forecastDataEntity,
-    required int maxVolume,
-  }) {
-    int vol = forecastDataEntity.pcpTot + forecastDataEntity.pcpTotStd;
-    if (maxVolume <= vol) {
-      maxVolume = vol;
-    }
-    return maxVolume;
-  }
-
-  WeatherForecastWeekCalculatedEntity calcTotalExpectation({
-    required WeatherForecastDataModel forecastDataEntity,
-    required WeatherForecastWeekCalculatedModel forecastWeekCalculated,
-  }) {
-    final max = forecastDataEntity.pcpTot + forecastDataEntity.pcpTotStd;
-    final min = forecastDataEntity.pcpTot - forecastDataEntity.pcpTotStd;
-
-    forecastWeekCalculated.maxWeekExpectationRain =
-        forecastWeekCalculated.maxWeekExpectationRain + max;
-
-    forecastWeekCalculated.minWeekExpectationRain =
-        forecastWeekCalculated.minWeekExpectationRain + min;
-    if (forecastWeekCalculated.minWeekExpectationRain < 0) {
-      forecastWeekCalculated.minWeekExpectationRain = 0;
-    }
-
-    return forecastWeekCalculated;
+    final Map<String, dynamic> mapResult = {
+      'forecast': forecastResultProcessed.toMap(),
+      'sensors': sensorsListMap,
+      'field_notebook_setup': fieldSetup['field_notebook_setup'],
+    };
+    return Response(
+      resultSensors.statusCode,
+      body: JsonEncoder.withIndent(' ').convert(mapResult),
+    );
   }
 }

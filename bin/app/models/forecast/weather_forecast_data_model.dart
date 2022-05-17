@@ -1,3 +1,5 @@
+import 'weather_forecast_calculeted_model.dart';
+
 class WeatherForecastDataModel {
   WeatherForecastDataModel({
     required this.pop,
@@ -12,6 +14,7 @@ class WeatherForecastDataModel {
     required this.ws10Max,
     required this.pcpTotStd,
     required this.forecastDate,
+    this.weatherForecastCalculated,
     String? cop,
   });
 
@@ -27,6 +30,8 @@ class WeatherForecastDataModel {
   final int ws10Max;
   final int pcpTotStd;
   final String forecastDate;
+  final WeatherForecastCalculatedModel? weatherForecastCalculated;
+
   String? cop;
 
   Map<String, dynamic> toMap() {
@@ -44,6 +49,7 @@ class WeatherForecastDataModel {
       'ws10_max': ws10Max,
       'pcp_tot_std': pcpTotStd,
       'forecast_date': forecastDate,
+      'calculated': weatherForecastCalculated?.toMap()
     };
   }
 
@@ -78,6 +84,7 @@ class WeatherForecastDataModel {
     int? ws10Max,
     int? pcpTotStd,
     String? forecastDate,
+    WeatherForecastCalculatedModel? weatherForecastCalculated,
   }) {
     return WeatherForecastDataModel(
       pop: pop ?? this.pop,
@@ -92,6 +99,8 @@ class WeatherForecastDataModel {
       ws10Max: ws10Max ?? this.ws10Max,
       pcpTotStd: pcpTotStd ?? this.pcpTotStd,
       forecastDate: forecastDate ?? this.forecastDate,
+      weatherForecastCalculated:
+          weatherForecastCalculated ?? this.weatherForecastCalculated,
     );
   }
 }

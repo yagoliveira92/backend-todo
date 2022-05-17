@@ -26,4 +26,12 @@ class WeatherForecastModel {
       ),
     );
   }
+
+  WeatherForecastModel copyWith({
+    List<WeatherForecastPointModel>? forecastPoints,
+  }) {
+    return WeatherForecastModel(
+      forecastPoints: forecastPoints ?? this.forecastPoints,
+    );
+  }
 }
