@@ -26,7 +26,11 @@ Future main(List<String> args) async {
 _startShelfServer(List args) async {
   int port = args[0];
 
-  var handler = const Pipeline().addMiddleware(logRequests()).addHandler(
+  var handler = const Pipeline()
+      .addMiddleware(
+        logRequests(),
+      )
+      .addHandler(
         Routes.routes(),
       );
 
