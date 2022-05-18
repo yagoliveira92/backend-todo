@@ -4,8 +4,10 @@ import '../models/forecast/weather_forecast_week_calculated_model.dart';
 import '../models/forecast/weather_forecast_model.dart';
 
 abstract class ForecastCalculus {
-  static WeatherForecastModel weatherHelper(
-      {required WeatherForecastModel forecastModel}) {
+  static WeatherForecastModel weatherHelper({
+    required WeatherForecastModel forecastModel,
+    bool isHome = false,
+  }) {
     // Loop de todos os pontos de previsão
     final processedListPoint = forecastModel.forecastPoints.map(
       (forecastPoint) {
@@ -48,11 +50,17 @@ abstract class ForecastCalculus {
             weatherForecastCalculated: forecastCalculated,
           );
         }).toList();
+        if (isHome) {
+          return forecastPoint.copyWith(
+            weatherForecastWeekCalculated: forecastWeek,
+            data: [
+              pointCalculated[0],
+            ],
+          );
+        }
         return forecastPoint.copyWith(
           weatherForecastWeekCalculated: forecastWeek,
-          data: [
-            pointCalculated[0],
-          ],
+          data: pointCalculated,
         );
       },
     ).toList();

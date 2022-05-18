@@ -67,8 +67,10 @@ class HomeController {
       ],
     );
 
-    final forecastResultProcessed =
-        ForecastCalculus.weatherHelper(forecastModel: forecast);
+    final forecastResultProcessed = ForecastCalculus.weatherHelper(
+      forecastModel: forecast,
+      isHome: true,
+    );
 
     final sensorsMap = json.decode(resultSensors.body);
 
