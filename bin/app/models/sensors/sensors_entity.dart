@@ -1,7 +1,4 @@
 import 'dart:convert';
-
-import 'package:collection/collection.dart';
-
 import 'descriptions_entity.dart';
 import 'equipment_status_entity.dart';
 import 'soil_table/soil_table_entity.dart';

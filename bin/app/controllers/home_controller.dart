@@ -11,48 +11,48 @@ import '../utils/sensors_calculus.dart';
 
 class HomeController {
   static homeHandler(Request request) async {
-    final _allParams = request.requestedUri.queryParameters;
-    final _getToken = request.headers['authorization'] ?? '';
+    final allParams = request.requestedUri.queryParameters;
+    final getToken = request.headers['authorization'] ?? '';
 
-    final _urlHistoricals = Uri.https('staging.cultivointeligente.com.br',
-        '/api/v4/equipments/historicals', _allParams);
-    final _urlForecast = Uri.https(
+    final urlHistoricals = Uri.https('staging.cultivointeligente.com.br',
+        '/api/v4/equipments/historicals', allParams);
+    final urlForecast = Uri.https(
         'staging.cultivointeligente.com.br',
         '/api/v4/forecasts/daily',
-        {'organization_id': _allParams['organization_id']});
-    final _urlSensors = Uri.https('staging.cultivointeligente.com.br',
+        {'organization_id': allParams['organization_id']});
+    final urlSensors = Uri.https('staging.cultivointeligente.com.br',
         '/api/v4/widgets/equipment_measures', {
-      'organization_id': _allParams['organization_id'],
+      'organization_id': allParams['organization_id'],
     });
-    final _urlFieldNotebook = Uri.https(
+    final urlFieldNotebook = Uri.https(
         'agrosmart-field-notebook.staging.cultivointeligente.com.br',
         '/field_notebook/archive_history', {
-      'organization_id': _allParams['organization_id'],
-      'company_id': _allParams['company_id'],
+      'organization_id': allParams['organization_id'],
+      'company_id': allParams['company_id'],
       'count': '3',
     });
 
     final resultHistoricals =
-        await http.get(_urlHistoricals, headers: {'authorization': _getToken});
+        await http.get(urlHistoricals, headers: {'authorization': getToken});
     if (resultHistoricals.statusCode > 300) {
       return Response(resultHistoricals.statusCode,
           body: resultHistoricals.body);
     }
 
     final resultForecast =
-        await http.get(_urlForecast, headers: {'authorization': _getToken});
+        await http.get(urlForecast, headers: {'authorization': getToken});
     if (resultForecast.statusCode > 300) {
       return Response(resultForecast.statusCode, body: resultForecast.body);
     }
 
     final resultSensors =
-        await http.get(_urlSensors, headers: {'authorization': _getToken});
+        await http.get(urlSensors, headers: {'authorization': getToken});
     if (resultSensors.statusCode > 300) {
       return Response(resultSensors.statusCode, body: resultSensors.body);
     }
 
     final resultHistoryFieldNotebook = await http
-        .get(_urlFieldNotebook, headers: {'authorization': _getToken});
+        .get(urlFieldNotebook, headers: {'authorization': getToken});
     if (resultHistoryFieldNotebook.statusCode > 300) {
       return Response(resultHistoryFieldNotebook.statusCode,
           body: resultHistoryFieldNotebook.body);

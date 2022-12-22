@@ -8,16 +8,16 @@ import '../utils/sensors_calculus.dart';
 
 class SensorsController {
   static sensorsHandler(Request request) async {
-    final _allParams = request.requestedUri.queryParameters;
-    final _getToken = request.headers['authorization'] ?? '';
+    final allParams = request.requestedUri.queryParameters;
+    final getToken = request.headers['authorization'] ?? '';
 
-    final _urlSensors = Uri.https('staging.cultivointeligente.com.br',
+    final urlSensors = Uri.https('staging.cultivointeligente.com.br',
         '/api/v4/widgets/equipment_measures', {
-      'organization_id': _allParams['organization_id'],
+      'organization_id': allParams['organization_id'],
     });
 
     final resultSensors =
-        await http.get(_urlSensors, headers: {'authorization': _getToken});
+        await http.get(urlSensors, headers: {'authorization': getToken});
     if (resultSensors.statusCode > 300) {
       return Response(resultSensors.statusCode, body: resultSensors.body);
     }
